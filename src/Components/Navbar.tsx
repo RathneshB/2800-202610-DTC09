@@ -1,4 +1,4 @@
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
@@ -7,8 +7,8 @@ const Navbar = () => {
         <Link to="/" style={styles.Links}>Home</Link>
       </div>
       <div style={styles.rightLinks}>
-        <Link to="/" style={styles.Links}>Login</Link>
-        <Link to="/"style={styles.Links}>Sign Up</Link>
+        <a href="/login.html" style={styles.Links}>Login</a>
+        <a href="/register.html" style={styles.Links}>Sign Up</a>
       </div>
     </nav>
   );
