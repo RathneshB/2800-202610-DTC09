@@ -5,6 +5,7 @@ import Navbar from "./Components/Navbar";
 import Main from "./Components/Main";
 import Login from "./Components/Login";
 import Signup from "./Components/Signup";
+import Footer from "./Components/footer";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
@@ -34,6 +35,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Main />
+              <Footer />
             </ProtectedRoute>
           }
         />
