@@ -1,15 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { useNavigate, Link } from "react-router-dom";
+import introJs from "intro.js";
+import "intro.js/introjs.css";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const intro = introJs();
+
+    intro.setOptions({
+      steps: [
+        {
+          element: document.querySelector("#email") as HTMLElement,
+          intro: "If you have an account, input your email here.",
+          position: "right",
+        },
+        {
+          element: document.querySelector("#signupLink") as HTMLElement,
+          intro: "Click Sign Up to create a new account.",
+          position: "right",
+        },
+      ],
+    });
+
+    intro.start();
+
+    return () => intro.exit();
+  }, []);
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -42,7 +69,10 @@ const Login = () => {
     setErrors({});
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     setLoading(false);
 
@@ -60,13 +90,17 @@ const Login = () => {
           <span style={styles.logo}>🍔 FoodRoutes</span>
         </div>
         <h2 style={styles.heading}>Welcome back</h2>
-        <p style={styles.subheading}>Sign in to find affordable food near you</p>
+        <p style={styles.subheading}>
+          Sign in to find affordable food near you
+        </p>
 
         {serverError && <div style={styles.serverError}>{serverError}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
           <div style={styles.fieldGroup}>
-            <label style={styles.label} htmlFor="email">Email</label>
+            <label style={styles.label} htmlFor="email">
+              Email
+            </label>
             <input
               id="email"
               type="email"
@@ -78,11 +112,15 @@ const Login = () => {
                 borderColor: errors.email ? "#e53e3e" : "#c3d9a0",
               }}
             />
-            {errors.email && <span style={styles.errorText}>{errors.email}</span>}
+            {errors.email && (
+              <span style={styles.errorText}>{errors.email}</span>
+            )}
           </div>
 
           <div style={styles.fieldGroup}>
-            <label style={styles.label} htmlFor="password">Password</label>
+            <label style={styles.label} htmlFor="password">
+              Password
+            </label>
             <input
               id="password"
               type="password"
@@ -94,7 +132,9 @@ const Login = () => {
                 borderColor: errors.password ? "#e53e3e" : "#c3d9a0",
               }}
             />
-            {errors.password && <span style={styles.errorText}>{errors.password}</span>}
+            {errors.password && (
+              <span style={styles.errorText}>{errors.password}</span>
+            )}
           </div>
 
           <button
@@ -112,7 +152,9 @@ const Login = () => {
 
         <p style={styles.signupText}>
           Don't have an account?{" "}
-          <Link to="/signup" style={styles.signupLink}>Sign Up</Link>
+          <Link to="/signup" id="signupLink" style={styles.signupLink}>
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
