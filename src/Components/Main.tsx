@@ -1,7 +1,7 @@
-import image from '../assets/food.jpg'
-import image1 from '../assets/food2.jpg'
-import image2 from '../assets/food3.jpg'
-import Card from './Card'
+import image from "../assets/food.jpg";
+import image1 from "../assets/food2.jpg";
+import image2 from "../assets/food3.jpg";
+import Card from "./Card";
 
 const Main = () => {
   return (
@@ -35,12 +35,12 @@ const Main = () => {
       </div>
     </main>
   );
-}
+};
 
 const styles = {
   background: {
     backgroundColor: "#E6E6FA",
-    paddingTop: '3rem',
+    paddingTop: "3rem",
   },
   imageContainer: {
     display: "flex",
@@ -55,9 +55,9 @@ const styles = {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: "4rem",
-    padding: '1rem',
-    gap: '1rem',
-  }
+    padding: "1rem",
+    gap: "1rem",
+  },
 };
 
-export default Main
+export default Main;
