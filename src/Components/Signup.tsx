@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { useNavigate, Link } from "react-router-dom";
+import introJs from "intro.js";
+import "intro.js/introjs.css";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -12,6 +14,39 @@ const Signup = () => {
   const [serverError, setServerError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+    const intro = introJs();
+
+    intro.setOptions({
+      steps: [
+        {
+          element: document.querySelector("#email") as HTMLElement,
+          intro: "Input your email here.",
+          position: "right",
+        },
+        {
+          element: document.querySelector("#password") as HTMLElement,
+          intro: "Input your password here.",
+          position: "right",
+        },
+        {
+          element: document.querySelector("#confirmPassword") as HTMLElement,
+          intro: "Confirm your password here.",
+          position: "right",
+        },
+        {
+          element: document.querySelector("#signupButton") as HTMLElement,
+          intro: "Click Sign Up to create your account, then check your email for a confirmation.",
+          position: "right",
+        },
+      ],
+    });
+
+    intro.start();
+
+    return () => intro.exit();
+  }, []);
 
   const validate = () => {
     const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
@@ -126,6 +161,7 @@ const Signup = () => {
 
           <button
             type="submit"
+            id="signupButton"
             disabled={loading}
             style={{
               ...styles.button,
