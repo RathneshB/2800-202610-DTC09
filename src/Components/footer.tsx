@@ -96,7 +96,12 @@ export default function FloatingFooter() {
                     return (
                         <button
                             key={item.label}
-                            onClick={() => setActive(index)}
+                            onClick={() => {
+                                setActive(index);
+                                if (item.label === "Search") {
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }
+                            }}
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',

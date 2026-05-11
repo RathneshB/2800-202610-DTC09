@@ -2,6 +2,7 @@ import image from "../assets/food.jpg";
 import image1 from "../assets/food2.jpg";
 import image2 from "../assets/food3.jpg";
 import Card from "./Card";
+import Maps from "./Maps";
 import Search from "./Search";
 
 const Main = () => {
@@ -35,6 +36,7 @@ const Main = () => {
           button="View Map"
         />
       </div>
+      <Maps />
     </main>
   );
 };
