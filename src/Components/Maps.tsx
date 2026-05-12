@@ -18,9 +18,6 @@ const Maps = () => {
 
     const [address, setAddress] = useState('');
 
-    const [responseData, setResponseData] =
-        useState<any>(null);
-
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -28,7 +25,6 @@ const Maps = () => {
 
         const loadGoogleMaps = async () => {
             try {
-                // Already loaded
                 if (window.google?.maps) {
                     await initMap();
                     return;
@@ -37,8 +33,7 @@ const Maps = () => {
                 const script =
                     document.createElement('script');
 
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env
-                    .VITE_GOOGLE_MAPS_API_KEY
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_KEY
                     }&v=weekly`;
 
                 script.async = true;
@@ -49,13 +44,6 @@ const Maps = () => {
 
                     await initMap();
                 };
-
-                script.onerror = () => {
-                    console.error(
-                        'Failed to load Google Maps'
-                    );
-                };
-
                 document.head.appendChild(script);
             } catch (error) {
                 console.error(
@@ -96,7 +84,6 @@ const Maps = () => {
                             zoom: 10,
                             mapTypeControl: false,
                             fullscreenControl: false,
-                            // mapId: 'c0e0fa051cca30ea4942062a',
                         }
                     );
 
@@ -137,11 +124,7 @@ const Maps = () => {
     }, []);
 
     const clear = () => {
-        if (markerRef.current) {
-            markerRef.current.map = null;
-        }
-
-        setResponseData(null);
+        setAddress('');
     };
 
     const geocode = async (request: any) => {
@@ -176,8 +159,6 @@ const Maps = () => {
 
             markerRef.current.map =
                 mapRef.current;
-
-            setResponseData(response);
         } catch (error) {
             console.error(
                 'Geocoding failed:',
@@ -199,97 +180,64 @@ const Maps = () => {
     };
 
     return (
-        <div
-            style={{
+        <div style={{
+            margin: '0.5rem 0',
+            display: 'flex',
+            flexDirection: 'column',
+            paddingTop: '0.5rem',
+            alignItems: 'center',
+        }}>
+            <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem',
-                width: '100%',
-                padding: '1rem',
-            }}
-        >
-            {/* Controls */}
-            <div
-                style={{
-                    display: 'flex',
-                    gap: '1rem',
-                    alignItems: 'center',
-                }}
-            >
-                <input
-                    type="text"
-                    placeholder="Enter address..."
-                    value={address}
-                    onChange={(e) =>
-                        setAddress(e.target.value)
-                    }
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            void handleSubmit();
+                border: '2px solid #5d866c',
+                borderRadius: '1rem',
+                backgroundColor: '#f5f3f1',
+                fontSize: '1.125rem',
+                maxHeight: 'min-content'
+            }}>
+                <div style={{ display: 'flex', flexDirection: 'row', padding: '0 0.5rem' }}>
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) =>
+                            setAddress(e.target.value)
                         }
-                    }}
-                    style={{
-                        flex: 1,
-                        padding: '1rem',
-                        borderRadius: '0.75rem',
-                        border: '1px solid #ccc',
-                        fontSize: '1rem',
-                    }}
-                />
-
-                <button
-                    onClick={() =>
-                        void handleSubmit()
-                    }
-                    style={{
-                        padding: '1rem',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Geocode
-                </button>
-
-                <button
-                    onClick={clear}
-                    style={{
-                        padding: '1rem',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Clear
-                </button>
-            </div>
-
-            {/* JSON Response */}
-            {responseData && (
-                <div
-                    style={{
-                        background: '#111',
-                        color: '#fff',
-                        padding: '1rem',
-                        borderRadius: '1rem',
-                        overflow: 'auto',
-                        maxHeight: '300px',
-                    }}
-                >
-                    <pre>
-                        {JSON.stringify(
-                            responseData,
-                            null,
-                            2
-                        )}
-                    </pre>
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                void handleSubmit();
+                            }
+                        }}
+                        placeholder="Find stores near you..."
+                        required
+                        style={{
+                            flex: 1,
+                            color: '#0D0A0B',
+                            backgroundColor: '#F3EFF5',
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            padding: '0 0.5rem',
+                            maxWidth: '130%',
+                            outline: 'none',
+                            border: 'none',
+                            borderRadius: '1rem'
+                        }}
+                    />
+                    <button onClick={clear} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+                        <svg id="svgX" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0D0A0B" strokeWidth="2" strokeLinecap="round"
+                            strokeLinejoin="round" >
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M18 6l-12 12" />
+                            <path d="M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-            )}
-
-            {/* Loading */}
+            </div>
             {loading && (
                 <div>
                     Loading Google Maps...
                 </div>
             )}
-
-            {/* Map */}
             <div
                 ref={mapContainerRef}
                 style={{
@@ -297,8 +245,7 @@ const Maps = () => {
                     height: '600px',
                     borderRadius: '1rem',
                     overflow: 'hidden',
-                }}
-            />
+                }} />
         </div>
     );
 };
