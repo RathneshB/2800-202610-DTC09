@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.0.2",
     "@supabase/supabase-js": "^2.105.4",
     "intro.js-react": "^1.0.0",
     "prop-types": "^15.8.1",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/google.maps": "^3.64.0",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
