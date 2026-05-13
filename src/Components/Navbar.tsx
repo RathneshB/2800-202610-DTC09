@@ -9,10 +9,10 @@ const Navbar = () => {
         </Link>
       </div>
       <div style={styles.rightLinks}>
-        <Link to="/" style={styles.Login}>
+        <Link to="/login" style={styles.Login}>
           Log in
         </Link>
-        <Link to="/" style={styles.SignUp}>
+        <Link to="/Signup" style={styles.SignUp}>
           Sign Up
         </Link>
       </div>
