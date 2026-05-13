@@ -80,7 +80,7 @@ const Maps = () => {
                                 lat: 37.7749,
                                 lng: -122.4194,
                             },
-
+                            mapId: 'c0e0fa051cca30ea4942062a',
                             zoom: 10,
                             mapTypeControl: false,
                             fullscreenControl: false,
