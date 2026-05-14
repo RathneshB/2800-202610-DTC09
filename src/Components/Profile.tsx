@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Accessibility, User } from 'lucide-react';
+import {
+    Accessibility,
+    User,
+} from 'lucide-react';
+
+import { supabase } from '../supabase';
 
 export default function Profile() {
     const [userMenuOpen, setUserMenuOpen] =
@@ -19,6 +24,19 @@ export default function Profile() {
     const [colorblindMode, setColorblindMode] =
         useState(false);
 
+    const [loading, setLoading] =
+        useState(false);
+
+    const [user, setUser] = useState<any>(null);
+
+    const [
+        changePasswordOpen,
+        setChangePasswordOpen,
+    ] = useState(false);
+
+    const [newPassword, setNewPassword] =
+        useState('');
+
     useEffect(() => {
         const savedDarkMode =
             localStorage.getItem('darkMode') ===
@@ -36,6 +54,17 @@ export default function Profile() {
         setDarkMode(savedDarkMode);
         setLargeText(savedLargeText);
         setColorblindMode(savedColorblind);
+
+        const fetchUser = async () => {
+            const {
+                data: { user },
+            } =
+                await supabase.auth.getUser();
+
+            setUser(user);
+        };
+
+        fetchUser();
     }, []);
 
     const handleDarkModeToggle = () => {
@@ -71,26 +100,71 @@ export default function Profile() {
         );
     };
 
+    const handleChangePassword =
+        async () => {
+            if (!user || !newPassword)
+                return;
+
+            setLoading(true);
+
+            const { error } =
+                await supabase.auth.updateUser(
+                    {
+                        password:
+                            newPassword,
+                    }
+                );
+
+            setLoading(false);
+
+            if (error) {
+                alert(
+                    'Error changing password: ' +
+                    error.message
+                );
+            } else {
+                alert(
+                    'Password changed successfully!'
+                );
+
+                setNewPassword('');
+
+                setChangePasswordOpen(
+                    false
+                );
+            }
+        };
+
     return (
         <div
             className={`
                 profile-page
-                ${darkMode ? 'darkmode' : ''}
-                ${largeText ? 'large-text' : ''}
+                ${darkMode
+                    ? 'darkmode'
+                    : ''
+                }
+                ${largeText
+                    ? 'large-text'
+                    : ''
+                }
                 ${colorblindMode
                     ? 'colorblind-mode'
                     : ''
                 }
-            `}>
+            `}
+        >
             <div className="content">
                 <br />
+
+                {/* USER PROFILE */}
                 <div
                     className="profile-cont"
                     onClick={() =>
                         setUserMenuOpen(
                             !userMenuOpen
                         )
-                    }>
+                    }
+                >
                     <div style={{ flex: 1 }}>
                         <div className="profile-header">
                             <User size={20} />
@@ -102,14 +176,111 @@ export default function Profile() {
 
                         {userMenuOpen && (
                             <div className="profile-submenu">
-                                <div className="profile-item">
-                                    Profile settings
-                                    coming soon...
-                                </div>
+                                {user ? (
+                                    <>
+                                        {/* EMAIL */}
+                                        <div className="profile-item">
+                                            <label>
+                                                Email
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                value={
+                                                    user.email ||
+                                                    ''
+                                                }
+                                                disabled
+                                                className="profile-input disabled-input"
+                                            />
+                                        </div>
+
+                                        {/* PASSWORD */}
+                                        <div className="profile-item">
+                                            <label>
+                                                Password
+                                            </label>
+
+                                            <input
+                                                type="password"
+                                                value="••••••••••"
+                                                disabled
+                                                className="profile-input disabled-input"
+                                            />
+                                        </div>
+
+                                        {/* CHANGE PASSWORD */}
+                                        <div className="profile-item">
+                                            <button
+                                                onClick={(
+                                                    e
+                                                ) => {
+                                                    e.stopPropagation();
+
+                                                    setChangePasswordOpen(
+                                                        !changePasswordOpen
+                                                    );
+                                                }}
+                                                className="change-password-button"
+                                            >
+                                                Change Password
+                                            </button>
+
+                                            {changePasswordOpen && (
+                                                <div className="change-password-form">
+                                                    <input
+                                                        type="password"
+                                                        value={
+                                                            newPassword
+                                                        }
+                                                        onChange={(
+                                                            e
+                                                        ) =>
+                                                            setNewPassword(
+                                                                e
+                                                                    .target
+                                                                    .value
+                                                            )
+                                                        }
+                                                        placeholder="New password"
+                                                        className="profile-input"
+                                                    />
+
+                                                    <button
+                                                        onClick={(
+                                                            e
+                                                        ) => {
+                                                            e.stopPropagation();
+
+                                                            void handleChangePassword();
+                                                        }}
+                                                        disabled={
+                                                            loading
+                                                        }
+                                                        className="save-button"
+                                                    >
+                                                        {loading
+                                                            ? 'Changing...'
+                                                            : 'Update Password'}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="profile-item">
+                                        No user
+                                        registered.
+                                        Please log
+                                        in.
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
                 </div>
+
+                {/* APPEARANCE */}
                 <div
                     className="profile-cont"
                     onClick={() =>
@@ -148,7 +319,8 @@ export default function Profile() {
                                     />
 
                                     <span>
-                                        Dark Mode
+                                        Dark
+                                        Mode
                                     </span>
                                 </label>
 
@@ -169,7 +341,8 @@ export default function Profile() {
                                     />
 
                                     <span>
-                                        Larger Text
+                                        Larger
+                                        Text
                                     </span>
                                 </label>
 
@@ -190,7 +363,8 @@ export default function Profile() {
                                     />
 
                                     <span>
-                                        High Contrast
+                                        High
+                                        Contrast
                                     </span>
                                 </label>
                             </div>
@@ -246,6 +420,73 @@ export default function Profile() {
                     gap: 12px;
                 }
 
+                .profile-item {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                }
+
+                .profile-item label {
+                    font-weight: 500;
+                }
+
+                .profile-input {
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 6px;
+                    font-size: 1rem;
+                }
+
+                .disabled-input {
+                    background: #e9ecef;
+                    opacity: 0.8;
+                    cursor: not-allowed;
+                }
+
+                .save-button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    padding: 10px 14px;
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                }
+
+                .save-button:hover {
+                    background: #0056b3;
+                }
+
+                .save-button:disabled {
+                    background: #999;
+                    cursor: not-allowed;
+                }
+
+                .change-password-button {
+                    padding: 10px 14px;
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                }
+
+                .change-password-button:hover {
+                    background: #218838;
+                }
+
+                .change-password-form {
+                    margin-top: 12px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
                 .checkbox-label {
                     display: flex;
                     align-items: center;
@@ -260,6 +501,12 @@ export default function Profile() {
                 .darkmode .profile-cont {
                     background: #1e1e1e;
                     color: white;
+                }
+
+                .darkmode .profile-input {
+                    background: #2a2a2a;
+                    color: white;
+                    border: 1px solid #444;
                 }
 
                 .large-text {
