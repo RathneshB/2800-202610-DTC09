@@ -268,7 +268,8 @@ const Maps = () => {
             place.displayName + " Price level: " + place.priceLevel,
           );
           infoWindowRef.current.open({
-            marker,
+            map: mapRef.current,
+            anchor: marker,
           });
         });
       });
