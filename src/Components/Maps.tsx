@@ -184,7 +184,7 @@ const Maps = () => {
         "location",
         "formattedAddress",
         "googleMapsURI",
-        "priceRange",
+        "priceLevel",
       ],
       locationRestriction: { center, radius },
       includedPrimaryTypes: ["grocery_store"],
@@ -226,7 +226,7 @@ const Maps = () => {
           const link = document.createElement("a");
           link.href = place.googleMapsURI;
           link.target = "_blank";
-          link.textContent = `Price level: ${place.priceLevel}`;
+          link.textContent = (place.priceLevel ? ` Price level: ${place.priceLevel}` : place.displayName)
           content.appendChild(link);
         }
 
@@ -234,7 +234,7 @@ const Maps = () => {
           mapRef.current.panTo(place.location);
           infoWindowRef.current.setContent(content);
           infoWindowRef.current.setHeaderContent(
-            place.displayName + " Price level: " + place.priceLevel,
+            place.displayName + (place.priceLevel ? ` Price level: ${place.priceLevel}` : "")
           );
           infoWindowRef.current.open({
             map: mapRef.current,
