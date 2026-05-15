@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
@@ -7,24 +7,20 @@ declare global {
 }
 
 const Maps = () => {
-    const mapContainerRef =
-        useRef<HTMLDivElement | null>(null);
-
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
-
   const markerRef = useRef<any>(null);
-
   const geocoderRef = useRef<any>(null);
-
   const placeMarkersRef = useRef<any[]>([]);
-
   const infoWindowRef = useRef<any>(null);
-
-  const [address, setAddress] = useState('');
-
-  const [loading, setLoading] = useState(true);
-
   const advancedMarkerRef = useRef<any>(null);
+
+  const [address, setAddress] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -36,9 +32,11 @@ const Maps = () => {
           return;
         }
 
-        const existing = document.querySelector('script[data-maps-script]') as HTMLScriptElement | null;
+        const existing = document.querySelector(
+          "script[data-maps-script]",
+        ) as HTMLScriptElement | null;
         if (existing) {
-          existing.addEventListener("load", () => { 
+          existing.addEventListener("load", () => {
             if (mounted) {
               initMap();
             }
@@ -59,10 +57,7 @@ const Maps = () => {
         };
         document.head.appendChild(script);
       } catch (error) {
-                console.error(
-                    'Google Maps load error:',
-                    error
-                );
+        console.error("Google Maps load error:", error);
       }
     };
 
@@ -72,10 +67,7 @@ const Maps = () => {
       try {
         const google = window.google;
 
-                const { Geocoder } =
-                    await google.maps.importLibrary(
-                        'geocoding'
-                    );
+        const { Geocoder } = await google.maps.importLibrary("geocoding");
 
         const { Place } = await google.maps.importLibrary("places");
 
@@ -83,25 +75,22 @@ const Maps = () => {
 
         const { event } = await google.maps.importLibrary("core");
 
-        advancedMarkerRef.current = (await google.maps.importLibrary("marker")).AdvancedMarkerElement;
+        advancedMarkerRef.current = (
+          await google.maps.importLibrary("marker")
+        ).AdvancedMarkerElement;
 
-        geocoderRef.current =
-            new Geocoder();
+        geocoderRef.current = new Geocoder();
 
-        mapRef.current =
-            new google.maps.Map(
-              mapContainerRef.current,
-              {
-                center: {
-                  lat: 37.7749,
-                  lng: -122.4194,
-                },
-                mapId: 'c0e0fa051cca30ea4942062a',
-                zoom: 10,
-                mapTypeControl: false,
-                fullscreenControl: false,
-            }
-        );
+        mapRef.current = new google.maps.Map(mapContainerRef.current, {
+          center: {
+            lat: 37.7749,
+            lng: -122.4194,
+          },
+          mapId: "c0e0fa051cca30ea4942062a",
+          zoom: 10,
+          mapTypeControl: false,
+          fullscreenControl: false,
+        });
 
         event.addListenerOnce(mapRef.current, "idle", () => {
           filterPlaces();
@@ -109,28 +98,21 @@ const Maps = () => {
 
         infoWindowRef.current = new InfoWindow();
 
-        markerRef.current =
-          new advancedMarkerRef.current({
-            map: mapRef.current,
-          });
+        markerRef.current = new advancedMarkerRef.current({
+          map: mapRef.current,
+        });
 
-        mapRef.current.addListener(
-          'click',
-          async (e: any) => {
-            if (e.latLng) {
-              await geocode({
-                location: e.latLng,
-              });
-            }
+        mapRef.current.addListener("click", async (e: any) => {
+          if (e.latLng) {
+            await geocode({
+              location: e.latLng,
+            });
           }
-        );
+        });
 
         setLoading(false);
       } catch (error) {
-        console.error(
-          'Map initialization error:',
-          error
-        );
+        console.error("Map initialization error:", error);
       }
     };
 
@@ -146,45 +128,32 @@ const Maps = () => {
   }, []);
 
   const clear = () => {
-    setAddress('');
+    setAddress("");
   };
 
   const geocode = async (request: any) => {
     try {
       clear();
 
-      if (
-        !geocoderRef.current ||
-        !mapRef.current
-      ) {
+      if (!geocoderRef.current || !mapRef.current) {
         return;
       }
 
-      const response =
-      await geocoderRef.current.geocode(
-        request
-      );
+      const response = await geocoderRef.current.geocode(request);
 
       if (!response.results.length) {
-        alert('No results found');
+        alert("No results found");
         return;
       }
 
       const result = response.results[0];
 
-      mapRef.current.setCenter(
-        result.geometry.location
-      );
+      mapRef.current.setCenter(result.geometry.location);
       filterPlaces();
     } catch (error) {
-      console.error(
-        'Geocoding failed:',
-        error
-      );
+      console.error("Geocoding failed:", error);
 
-      alert(
-        'Geocoding failed: ' + String(error)
-      );
+      alert("Geocoding failed: " + String(error));
     }
   };
 
@@ -280,74 +249,116 @@ const Maps = () => {
     }
   };
 
+  const goToMylocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported on your browser");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      setUserLocation({ lat, lng });
+
+      if (mapRef.current) {
+        mapRef.current.setCenter(userLocation);
+        mapRef.current.setZoom(10);
+        if (markerRef.current) {
+          markerRef.current.position = userLocation;
+          markerRef.current.map = mapRef.current;
+        }
+      }
+    });
+  };
+
   return (
-    <div style={{
-            margin: '0.5rem 0',
-            display: 'flex',
-            flexDirection: 'column',
-            paddingTop: '0.5rem',
-            alignItems: 'center',
-        }}>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                border: '2px solid #5d866c',
-                borderRadius: '1rem',
-                backgroundColor: '#f5f3f1',
-                fontSize: '1.125rem',
-                maxHeight: 'min-content'
-            }}>
-                <div style={{ display: 'flex', flexDirection: 'row', padding: '0 0.5rem' }}>
-                    <input
-                        type="text"
-                        value={address}
-                        onChange={(e) =>
-                            setAddress(e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                void handleSubmit();
-                            }
-                        }}
-                        placeholder="Find stores near you..."
-                        required
-                        style={{
-                            flex: 1,
-                            color: '#0D0A0B',
-                            backgroundColor: '#F3EFF5',
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            padding: '0 0.5rem',
-                            maxWidth: '130%',
-                            outline: 'none',
-                            border: 'none',
-                            borderRadius: '1rem'
-                        }}
-                    />
-                    <button onClick={clear} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-                        <svg id="svgX" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0D0A0B" strokeWidth="2" strokeLinecap="round"
-                            strokeLinejoin="round" >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M18 6l-12 12" />
-                            <path d="M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            {loading && (
-                <div>
-                    Loading Google Maps...
-                </div>
-            )}
-            <div
-                ref={mapContainerRef}
-                style={{
-                    width: '100%',
-                    height: '600px',
-                    borderRadius: '1rem',
-                    overflow: 'hidden',
-                }} />
+    <div
+      style={{
+        margin: "0.5rem 0",
+        display: "flex",
+        flexDirection: "column",
+        paddingTop: "0.5rem",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          border: "2px solid #5d866c",
+          borderRadius: "1rem",
+          backgroundColor: "#f5f3f1",
+          fontSize: "1.125rem",
+          maxHeight: "min-content",
+        }}
+      >
+        <div
+          style={{ display: "flex", flexDirection: "row", padding: "0 0.5rem" }}
+        >
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                void handleSubmit();
+              }
+            }}
+            placeholder="Find stores near you..."
+            required
+            style={{
+              flex: 1,
+              color: "#0D0A0B",
+              backgroundColor: "#F3EFF5",
+              fontSize: "1rem",
+              fontWeight: 600,
+              padding: "0 0.5rem",
+              maxWidth: "130%",
+              outline: "none",
+              border: "none",
+              borderRadius: "1rem",
+            }}
+          />
+          <button
+            onClick={clear}
+            style={{ border: "none", background: "none", cursor: "pointer" }}
+          >
+            <svg
+              id="svgX"
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#0D0A0B"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M18 6l-12 12" />
+              <path d="M6 6l12 12" />
+            </svg>
+          </button>
+          <button
+            onClick={goToMylocation}
+            style={{ border: "none", background: "none", cursor: "pointer" }}
+          >
+            Use current location
+          </button>
         </div>
+      </div>
+      {loading && <div>Loading Google Maps...</div>}
+      <div
+        ref={mapContainerRef}
+        style={{
+          width: "100%",
+          height: "600px",
+          borderRadius: "1rem",
+          overflow: "hidden",
+        }}
+      />
+    </div>
   );
 };
 
