@@ -8,6 +8,7 @@ import Signup from "./Components/Signup";
 import Profile from "./Components/Profile";
 import Footer from "./Components/footer";
 import Navigation from "./Components/Navigation";
+import Chatbot from "./Components/Chatbot";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <Chatbot />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
