@@ -32,7 +32,8 @@ const Main = () => {
           description="Search nearby supermarkets, corner stores, and food banks to find the most affordable nearby grocery options in your area. Filter by distance, price, and store type."
           button="Get Started"
           checks={["Free to use", "No signup Needed", "placeholder for now"]}
-        />
+          to = "Navigation"
+          />
         <img src={image3} style={styles.image} />
       </div>
       <div style={styles.cardContainer}>
@@ -42,6 +43,7 @@ const Main = () => {
           description="Plan the most efficient trip to affordable food near you. Get live transit direction, walking routes, and bus schedule to save time and money on both food and traveling expenses."
           button="View Map"
           checks={["Live transit routes", "Time estimates", "placeholder for now"]}
+          to = "Navigation"
         />
       </div>
       <Maps />

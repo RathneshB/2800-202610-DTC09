@@ -5,9 +5,10 @@ interface Props {
   description: string;
   button: string;
   checks: string[];
+  to: string;
   // stats: {number: string; label: string}
 }
-const Card = ({ title, description, button, checks }: Props) => {
+const Card = ({ title, description, button, checks, to = "/" }: Props) => {
   return (
     <>
       <style>{`
@@ -55,7 +56,7 @@ const Card = ({ title, description, button, checks }: Props) => {
           ))}
         </div>
         <div style={styles.divider}></div>
-        <Link to="/" className="card-btn">
+        <Link to={to} className="card-btn">
           {button}
           <span className="card-arrow"> →</span>
         </Link>

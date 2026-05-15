@@ -7,6 +7,7 @@ import Login from "./Components/Login";
 import Signup from "./Components/Signup";
 import Profile from "./Components/Profile";
 import Footer from "./Components/footer";
+import Navigation from "./Components/Navigation";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
-
+        <Route path="/navigation" element={<Navigation />} />
         <Route
           path="/"
           element={
