@@ -10,17 +10,12 @@ declare global {
 const Navigation = () => {
     const mapContainerRef =
         useRef<HTMLDivElement | null>(null);
-
     const mapRef = useRef<any>(null);
-
     const markerRef = useRef<any>(null);
-
     const geocoderRef = useRef<any>(null);
-
     const [address, setAddress] = useState('');
-
     const [loading, setLoading] = useState(true);
-
+    const [userLocation, setUserLocation] = useState<{ lat: number; lng: number} | null>(null);
     useEffect(() => {
         let mounted = true;
 
@@ -103,7 +98,6 @@ const Navigation = () => {
                         }
                     }
                 );
-
                 setLoading(false);
             } catch (error) {
                 console.error(
@@ -180,6 +174,29 @@ const Navigation = () => {
         });
     };
 
+    const goToMylocation = () => {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported on your browser');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async(position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          setUserLocation({ lat, lng});
+
+          if(mapRef.current) {
+            mapRef.current.setCenter({lat, lng});
+            mapRef.current.setZoom(10);
+            if (markerRef.current) {
+              markerRef.current.position = { lat ,lng};
+              markerRef.current.map = mapRef.current;
+            }
+          }
+        }
+      )
+    }
     return (
         <div style={{
             margin: '0.5rem 0',
@@ -231,6 +248,9 @@ const Navigation = () => {
                             <path d="M18 6l-12 12" />
                             <path d="M6 6l12 12" />
                         </svg>
+                    </button>
+                    <button onClick={goToMylocation} style ={{border: 'none', background: 'none', cursor: 'pointer' }}> 
+                      Use current location
                     </button>
                 </div>
             </div>
