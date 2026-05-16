@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 
 const HomeIcon = () => (
     <svg
@@ -33,19 +34,20 @@ const SearchIcon = () => (
 );
 
 const UserIcon = () => (
-    <svg
-        viewBox="0 0 24 24"
-        width="20"
-        height="20"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-    </svg>
+    <Link to="/profile">
+        <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="#000000"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+        </svg>
+    </Link>
 );
 
 type FooterItem = {
@@ -96,7 +98,15 @@ export default function FloatingFooter() {
                     return (
                         <button
                             key={item.label}
-                            onClick={() => setActive(index)}
+                            onClick={() => {
+                                setActive(index);
+                                if (item.label === "Search") {
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }
+                                if (item.label === "Profile") {
+                                    <Link to="/profile" />
+                                }
+                            }}
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
